@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Til Anika — 18 års bryllupsdag</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8cc80;
+    --gold-pale: #f5e6c0;
+    --deep: #120808;
+    --wine: #6b1414;
+    --wine-mid: #8b1c1c;
+    --cream: #f9f2e4;
+    --text: #f0e8d4;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--deep);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── Stars ── */
+  #canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Main layout ── */
+  .stage {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+  }
+
+  /* ── Gift ── */
+  #giftSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    animation: fadeIn 1.2s ease both;
+  }
+
+  .gift-container {
+    position: relative;
+    width: 180px;
+    height: 220px;
+    cursor: pointer;
+    perspective: 600px;
+  }
+
+  .gift-container:hover .box-body { transform: translateY(-4px); }
+  .gift-container:hover .lid      { transform: translateY(-4px); }
+
+  .box-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 180px;
+    height: 160px;
+    background: var(--wine-mid);
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+  }
+
+  .box-body::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 100%;
+    background: var(--gold);
+    opacity: 0.9;
+  }
+  .box-body::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 28px;
+    background: var(--gold);
+    opacity: 0.9;
+  }
+
+  .box-shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .lid {
+    position: absolute;
+    top: 28px;
+    left: -8px;
+    width: 196px;
+    height: 52px;
+    background: var(--wine);
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    transform-origin: center bottom;
+    z-index: 3;
+  }
+
+  .lid.opening {
+    animation: lidOpen 0.7s cubic-bezier(0.34,1.3,0.64,1) forwards;
+  }
+
+  @keyframes lidOpen {
+    0%   { transform: none; opacity: 1; }
+    60%  { transform: rotateX(-80deg) translateY(-80px) translateZ(40px); opacity: 1; }
+    100% { transform: rotateX(-90deg) translateY(-120px) translateZ(60px); opacity: 0; }
+  }
+
+  .lid::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 100%;
+    background: var(--gold);
+    opacity: 0.9;
+  }
+
+  /* Bow */
+  .bow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 60px;
+    z-index: 4;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+
+  .bow.hide { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+
+  .bow-left, .bow-right {
+    position: absolute;
+    top: 4px;
+    width: 38px;
+    height: 30px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0.92;
+  }
+  .bow-left  { left: 2px;  transform: rotate(-25deg); }
+  .bow-right { right: 2px; transform: rotate(25deg); }
+
+  .bow-knot {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 18px;
+    height: 18px;
+    background: var(--gold-light);
+    border-radius: 50%;
+    z-index: 5;
+  }
+
+  /* Ribbon tails */
+  .ribbon-tail {
+    position: absolute;
+    bottom: 0;
+    width: 14px;
+    height: 28px;
+    background: var(--gold);
+    opacity: 0.8;
+    border-radius: 0 0 6px 6px;
+  }
+  .ribbon-tail.left  { left: 38%; }
+  .ribbon-tail.right { right: 36%; }
+
+  /* ── CTA ── */
+  .cta {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--gold-light);
+    letter-spacing: 0.06em;
+    animation: breathe 2.5s ease-in-out infinite;
+    text-align: center;
+  }
+
+  @keyframes breathe {
+    0%,100% { opacity: 0.5; }
+    50%      { opacity: 1;   }
+  }
+
+  /* ── Message ── */
+  #messageSection {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    max-width: 580px;
+    width: 100%;
+    text-align: center;
+    animation: revealUp 1s ease both;
+  }
+
+  @keyframes revealUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+
+  .envelope-top {
+    font-size: 0.85rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.7;
+    margin-bottom: 1.2rem;
+  }
+
+  .card {
+    background: rgba(60, 8, 8, 0.5);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    padding: 3rem 2.5rem;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '❧';
+    position: absolute;
+    top: 1rem;
+    left: 1.5rem;
+    font-size: 1.4rem;
+    color: var(--gold);
+    opacity: 0.3;
+  }
+  .card::after {
+    content: '❧';
+    position: absolute;
+    bottom: 1rem;
+    right: 1.5rem;
+    font-size: 1.4rem;
+    color: var(--gold);
+    opacity: 0.3;
+    transform: scaleX(-1);
+  }
+
+  .to-name {
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--gold-light);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--gold);
+    opacity: 0.7;
+    letter-spacing: 0.12em;
+    margin-bottom: 2rem;
+  }
+
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .verse {
+    font-size: 1.2rem;
+    font-weight: 300;
+    line-height: 2;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+
+  .verse em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .verse-break {
+    display: block;
+    height: 0.5rem;
+  }
+
+  .heart-line {
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin: 1.5rem 0 0.5rem;
+    letter-spacing: 0.3em;
+  }
+
+  .signature {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    font-style: italic;
+    color: var(--gold-light);
+    font-weight: 400;
+  }
+
+  /* ── Floating hearts ── */
+  .heart-float {
+    position: fixed;
+    pointer-events: none;
+    z-index: 20;
+    font-size: 20px;
+    animation: floatUp 3.5s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-350px) scale(0.2) rotate(20deg); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .card { padding: 2rem 1.4rem; }
+    .to-name { font-size: 1.9rem; }
+    .verse { font-size: 1.05rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="stage">
+
+  <!-- GIFT -->
+  <div id="giftSection">
+    <div class="gift-container" onclick="openGift()" role="button" aria-label="Åbn din gave">
+      <div class="bow" id="bow">
+        <div class="bow-left"></div>
+        <div class="bow-right"></div>
+        <div class="bow-knot"></div>
+        <div class="ribbon-tail left"></div>
+        <div class="ribbon-tail right"></div>
+      </div>
+      <div class="lid" id="lid"></div>
+      <div class="box-body"><div class="box-shine"></div></div>
+    </div>
+    <p class="cta">Tryk for at åbne din gave ✦</p>
+  </div>
+
+  <!-- MESSAGE -->
+  <div id="messageSection">
+    <p class="envelope-top">8. maj 2026 &nbsp;·&nbsp; 18 år</p>
+    <div class="card">
+      <p class="to-name">Til Anika</p>
+      <p class="subtitle">min elskede, min hjemmehavn</p>
+      <div class="divider"></div>
+
+      <p class="verse">
+        Du er det mest værdifulde, jeg har i dette liv.<br>
+        Ikke noget, der kan pakkes ind eller måles —<br>
+        men <em>dig</em>. Levende, varm og fuldstændig uerstattelig.
+        <span class="verse-break"></span>
+        Disse 18 år har ikke altid været lette,<br>
+        men de har altid været <em>vores</em>.<br>
+        Og jeg ville ikke bytte et eneste minut af dem.
+        <span class="verse-break"></span>
+        Jeg elsker dig over hele mit hjerte —<br>
+        dybere end ord kan bære,<br>
+        mere end jeg nogensinde vil kunne vise dig.
+      </p>
+
+      <div class="heart-line">♥ ♥ ♥</div>
+      <div class="divider"></div>
+      <p class="signature">For altid din,<br>Christian</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── Starfield ── */
+(function() {
+  const c = document.getElementById('canvas');
+  const ctx = c.getContext('2d');
+  let W, H, stars = [];
+
+  function resize() {
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
+
+  function init() {
+    stars = [];
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.6 + 0.3,
+        a: Math.random(),
+        d: Math.random() * 0.008 + 0.003,
+        dir: Math.random() > 0.5 ? 1 : -1
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.a += s.d * s.dir;
+      if (s.a >= 1 || s.a <= 0.1) s.dir *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(240,220,160,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); init(); });
+  resize(); init(); draw();
+})();
+
+/* ── Open gift ── */
+function openGift() {
+  const lid = document.getElementById('lid');
+  const bow = document.getElementById('bow');
+  const giftSection = document.getElementById('giftSection');
+  const messageSection = document.getElementById('messageSection');
+
+  lid.classList.add('opening');
+  bow.classList.add('hide');
+
+  spawnHearts(30);
+
+  setTimeout(() => {
+    giftSection.style.display = 'none';
+    messageSection.style.display = 'flex';
+  }, 900);
+}
+
+function spawnHearts(n) {
+  const icons = ['❤️','🌹','✨','💛','🌸','💕'];
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const h = document.createElement('div');
+      h.className = 'heart-float';
+      h.textContent = icons[Math.floor(Math.random() * icons.length)];
+      h.style.left = (10 + Math.random() * 80) + 'vw';
+      h.style.top  = (20 + Math.random() * 50) + 'vh';
+      h.style.animationDelay = (Math.random() * 0.6) + 's';
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 4500);
+    }, i * 60);
+  }
+}
+</script>
+</body>
+</html>
